@@ -7,8 +7,10 @@ import com.tracker.tracker.models.request.FindTrainRequest;
 import com.tracker.tracker.models.response.ScheduleGetResponse;
 import com.tracker.tracker.models.response.ScheduleResponse;
 import com.tracker.tracker.models.response.StationGetResponse;
+import com.tracker.tracker.repositories.LiveRes;
 
 import java.security.Principal;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,4 +36,6 @@ public interface IScheduleService {
     List<StationGetResponse> getStationByTrain(UUID id);
 
     ScheduleResponse updatelocations(UUID id, UUID loc, Principal principal);
+
+    List<LiveRes> getAllScheduleLiveLocations(OffsetDateTime from,OffsetDateTime to, Principal principal);
 }

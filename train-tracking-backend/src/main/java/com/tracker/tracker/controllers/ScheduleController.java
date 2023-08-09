@@ -6,8 +6,11 @@ import com.tracker.tracker.models.request.DeleteRequest;
 import com.tracker.tracker.models.request.FindTrainRequest;
 import com.tracker.tracker.models.response.ScheduleResponse;
 import com.tracker.tracker.services.IScheduleService;
+
+import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -65,6 +68,12 @@ public class ScheduleController {
     @GetMapping("/getschstation/{id}")
     public ResponseEntity<?> getAllStationByTrain(@PathVariable UUID id){
         return ResponseEntity.ok(scheduleService.getStationByTrain(id));
+    }
+
+    @PreAuthorize("hasAnyAuthority('Super Admin', 'Passenger')")
+    @GetMapping("/getschstation/all/trainloc/{from}/{to}")
+    public ResponseEntity<?> getAllScheduleLocation(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime from, @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime to, Principal principal){
+        return ResponseEntity.ok(scheduleService.getAllScheduleLiveLocations(from,to,principal));
     }
 
     @PreAuthorize("hasAnyAuthority('Super Admin')")

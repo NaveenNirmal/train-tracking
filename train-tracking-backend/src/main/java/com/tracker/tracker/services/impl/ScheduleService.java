@@ -53,6 +53,7 @@ public class ScheduleService implements IScheduleService {
         newSchedule.setFirstClassAvailable(train.getFirstClassCount());
         newSchedule.setSecondClassAvailable(train.getSecondClassCount());
         newSchedule.setThirdClassAvailable(train.getThirdClassCount());
+        newSchedule.setLocation(depSt);
         newSchedule.setCreatedBy(user);
         newSchedule.setCreatedTime(OffsetDateTime.now());
         newSchedule.setModifiedTime(OffsetDateTime.now());
@@ -69,6 +70,7 @@ public class ScheduleService implements IScheduleService {
         Station arvSt = stationRepository.getById(createSchedule.getDepStationId());
         updateSchedule.setArrivalStation(arvSt);
         updateSchedule.setDepartureTime(createSchedule.getDepartureTime());
+        updateSchedule.setLocation(depSt);
         updateSchedule.setArrivalTime(createSchedule.getArrivalTime());
         Train train = trainRepository.getById(createSchedule.getTrainId());
         updateSchedule.setTrain(train);
@@ -226,6 +228,26 @@ public class ScheduleService implements IScheduleService {
         schedule.setModifiedTime(OffsetDateTime.now());
         schedule.setModifiedBy(user);
         return ScheduleResponseConvertor(scheduleRepository.save(schedule));
+    }
+
+    @Override
+    public List<LiveRes> getAllScheduleLiveLocations(OffsetDateTime from, OffsetDateTime to, Principal principal) {
+        List<LiveRes> listRes = new ArrayList<>();
+
+        for (Schedule schedule :
+                scheduleRepository.findByDeletedAndDepartureTimeBetween( false,from,to)) {
+            listRes.add(scheduleLocationConverter(schedule));
+        }
+        return listRes;
+    }
+
+    private LiveRes scheduleLocationConverter(Schedule schedule) {
+        LiveRes liveRes = new LiveRes();
+        liveRes.setId(schedule.getId());
+        liveRes.setName(schedule.getTrain().getName());
+        liveRes.setLatitude(schedule.getLocation().getLat());
+        liveRes.setLongitude(schedule.getLocation().getLng());
+        return liveRes;
     }
 
     private StationGetResponse stationGetResponsesConverterByTrain(TrainStation train) {

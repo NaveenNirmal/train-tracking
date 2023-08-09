@@ -40,7 +40,7 @@ public class BookingService implements IBookingService {
     private final PassengerRepository passengerRepository;
     private final StationRepository stationRepository;
     private final TrainRepository trainRepository;
-
+    private final MailService mailService;
     @Override
     public BookingResponse bookingCreate(BookingCreate bookingRequest, Principal principal) {
         UserDetailsImpl userImpl = (UserDetailsImpl) userDetailsService.loadUserByUsername(principal.getName());
@@ -85,6 +85,7 @@ public class BookingService implements IBookingService {
         }
 
         scheduleRepository.save(schedule);
+        mailService.sendSimpleMail("Train Booking Confirmation Mail",user.getEmail(),"tadaaa");
 
         return BookingResponseConvertor(bookingRepository.save(newBooking));
     }
